@@ -4,8 +4,10 @@
 // Copy this ENTIRE file to src/App.tsx
 // ==========================================
 import { useState, useEffect, useCallback } from 'react';
+
 // Types
 type TabType = 'home' | 'transform' | 'studio' | 'beatmaker' | 'songwriter' | 'coach' | 'karaoke' | 'stems' | 'podcast' | 'sfx' | 'presets' | 'settings' | 'pricing' | 'signout';
+
 // Main App Component
 export default function App() {
   // State
@@ -57,13 +59,11 @@ export default function App() {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   
   useEffect(() => {
-    // Check if owner is unlocked from localStorage
     const unlocked = localStorage.getItem('ownerUnlocked');
     if (unlocked === 'true') {
       setIsOwnerUnlocked(true);
     }
     
-    // Initialize audio context on first interaction
     const initAudio = () => {
       if (!audioContext) {
         setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
@@ -71,7 +71,6 @@ export default function App() {
     };
     document.addEventListener('click', initAudio, { once: true });
     
-    // Owner unlock keyboard shortcut
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'O') {
         e.preventDefault();
@@ -85,7 +84,6 @@ export default function App() {
     };
   }, [audioContext]);
   
-  // Play sound effect
   const playSound = useCallback((type: string) => {
     if (!audioContext) return;
     
@@ -148,7 +146,6 @@ export default function App() {
     }
   }, [audioContext]);
   
-  // Handle owner unlock
   const handleOwnerUnlock = () => {
     if (ownerCode === 'LEGENDARY-OWNER-2024') {
       setIsOwnerUnlocked(true);
@@ -162,7 +159,6 @@ export default function App() {
     }
   };
   
-  // Handle payment
   const handlePayment = (plan: string) => {
     if (isOwnerUnlocked && plan === 'lifetime') {
       alert('✅ You already have FREE Lifetime access!');
@@ -172,7 +168,6 @@ export default function App() {
     setShowPaymentModal(true);
   };
   
-  // Process payment
   const processPayment = () => {
     setIsProcessing(true);
     setTimeout(() => {
@@ -182,7 +177,6 @@ export default function App() {
     }, 2000);
   };
   
-  // Generate beat
   const generateBeat = () => {
     if (!beatPrompt.trim()) {
       alert('Please describe the beat you want to create!');
@@ -190,7 +184,6 @@ export default function App() {
     }
     setBeatGenerated(false);
     setTimeout(() => {
-      // Generate random pattern based on prompt
       const newPattern: {[key: string]: boolean[]} = {
         kick: Array(16).fill(false).map((_, i) => i % 4 === 0 || (beatPrompt.toLowerCase().includes('trap') && i === 6)),
         snare: Array(16).fill(false).map((_, i) => i === 4 || i === 12),
@@ -203,7 +196,6 @@ export default function App() {
     }, 1500);
   };
   
-  // Play beat
   const playBeat = () => {
     if (isPlayingBeat) {
       setIsPlayingBeat(false);
@@ -227,14 +219,12 @@ export default function App() {
       step = (step + 1) % 16;
     }, (60 / bpm) * 250);
     
-    // Store interval to clear later
     setTimeout(() => {
       clearInterval(interval);
       setIsPlayingBeat(false);
     }, 10000);
   };
   
-  // Generate lyrics
   const generateLyrics = () => {
     if (!songPrompt.trim()) {
       alert('Please describe what your song should be about!');
@@ -248,19 +238,23 @@ ${songPrompt.includes('love') ? 'Every moment with you feels like a dream' : 'St
 ${songPrompt.includes('love') ? 'Your eyes light up everything it seems' : 'Ready to rise above the strife'}
 ${songPrompt.includes('love') ? 'I never knew that love could feel this way' : 'I\'ve got fire burning in my soul'}
 ${songPrompt.includes('love') ? 'With you I want to spend every single day' : 'Nothing\'s gonna stop me reaching my goal'}
+
 [Chorus]
 ${songPrompt.includes('love') ? 'You\'re my everything, my heart, my soul' : 'I\'m unstoppable, unbreakable'}
 ${songPrompt.includes('love') ? 'With you by my side, I feel whole' : 'My spirit is unmistakable'}
 ${songPrompt.includes('love') ? 'Together we can conquer it all' : 'Watch me rise, watch me fly'}
 ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching for the sky'}
+
 [Verse 2]
 ${songPrompt.includes('love') ? 'Through the storms and sunshine, you\'re my light' : 'Every setback is a setup for success'}
 ${songPrompt.includes('love') ? 'Holding your hand, everything feels right' : 'I\'m gonna give it nothing less than my best'}
 ${songPrompt.includes('love') ? 'Promise me you\'ll never let me go' : 'They said I couldn\'t, watch me prove them wrong'}
 ${songPrompt.includes('love') ? 'My love for you continues to grow' : 'I\'ve been working on this all along'}
+
 [Bridge]
 ${songPrompt.includes('love') ? 'I\'ll love you till the end of time' : 'This is my moment, this is my time'}
 ${songPrompt.includes('love') ? 'Forever yours, forever mine' : 'Victory is mine, I\'m in my prime'}
+
 [Chorus]
 ${songPrompt.includes('love') ? 'You\'re my everything, my heart, my soul' : 'I\'m unstoppable, unbreakable'}
 ${songPrompt.includes('love') ? 'With you by my side, I feel whole' : 'My spirit is unmistakable'}
@@ -273,7 +267,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     }, 2000);
   };
   
-  // Transform voice
   const transformVoice = () => {
     setIsTransforming(true);
     setTransformComplete(false);
@@ -285,13 +278,11 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     }, 3000);
   };
   
-  // Tab change handler
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
   }, []);
   
-  // Styles
   const styles = {
     app: {
       minHeight: '100vh',
@@ -471,7 +462,8 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
       padding: '40px 20px',
       marginTop: '40px',
     },
-  }; // Tabs configuration
+  };
+
   const tabs: { id: TabType; label: string; icon: string }[] = [
     { id: 'home', label: 'Home', icon: '🏠' },
     { id: 'transform', label: 'Transform', icon: '🎭' },
@@ -489,7 +481,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     { id: 'signout', label: 'Account', icon: '👤' },
   ];
   
-  // Transformation presets
   const transformPresets = [
     { id: 'legendary-powerhouse', name: 'Legendary Powerhouse', level: '20x', icon: '🎤' },
     { id: 'soul-icon', name: 'Soul Icon', level: '20x', icon: '👑' },
@@ -501,7 +492,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     { id: 'jazz-sophisticate', name: 'Jazz Sophisticate', level: '18x', icon: '🎷' },
   ];
   
-  // Karaoke songs
   const karaokeSongs = [
     { id: 1, title: 'Perfect Night', artist: 'Studio Sessions', difficulty: 'Easy', bpm: 90, duration: '3:42' },
     { id: 2, title: 'Summer Love', artist: 'The Dreamers', difficulty: 'Easy', bpm: 100, duration: '3:15' },
@@ -513,7 +503,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     { id: 8, title: 'The Greatest', artist: 'Champion Sound', difficulty: 'Expert', bpm: 140, duration: '3:50' },
   ];
   
-  // Vocal presets
   const vocalPresets = [
     { id: 1, name: 'Soulful Legend', category: 'Legendary', description: 'Rich, powerful soul voice' },
     { id: 2, name: 'Smooth Operator', category: 'Legendary', description: 'Silky smooth R&B tone' },
@@ -527,7 +516,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     { id: 10, name: 'Crystal Clarity', category: 'Podcast', description: 'Ultra-clear speech' },
   ];
   
-  // Sound effects for podcast
   const podcastSfx = [
     { id: 1, name: 'Intro Music', icon: '🎵', category: 'Music' },
     { id: 2, name: 'Outro Music', icon: '🎬', category: 'Music' },
@@ -538,6 +526,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
     { id: 7, name: 'Laughter', icon: '😂', category: 'Reactions' },
     { id: 8, name: 'Drum Roll', icon: '🥁', category: 'Music' },
   ];
+
   return (
     <div style={styles.app}>
       {/* Header */}
@@ -573,7 +562,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
           </nav>
         </div>
         
-        {/* Mobile menu */}
         {mobileMenuOpen && (
           <div style={{ 
             position: 'absolute', 
@@ -611,10 +599,9 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
       
       {/* Main Content */}
       <main style={styles.main}>
-    {/* HOME */}
+        {/* HOME */}
         {activeTab === 'home' && (
           <div>
-            {/* Hero Section */}
             <div style={{ textAlign: 'center', padding: '60px 20px' }}>
               <div style={{ 
                 display: 'inline-block', 
@@ -653,7 +640,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               </div>
             </div>
             
-            {/* Stats */}
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
@@ -674,7 +660,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               ))}
             </div>
             
-            {/* Features */}
             <div style={styles.section}>
               <h2 style={styles.title}>What You Can Do</h2>
               <p style={styles.subtitle}>Everything you need to create professional music</p>
@@ -707,7 +692,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <h2 style={styles.title}>🎭 Voice Transformer</h2>
               <p style={styles.subtitle}>Make your voice 10-20x better and completely unrecognizable</p>
               
-              {/* Presets */}
               <div style={{ marginBottom: '30px' }}>
                 <h3 style={{ marginBottom: '15px' }}>Choose a Preset</h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -736,7 +720,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </div>
               </div>
               
-              {/* Intensity */}
               <div style={{ marginBottom: '30px' }}>
                 <h3 style={{ marginBottom: '15px' }}>
                   Transformation Intensity: <span style={{ color: '#c084fc' }}>{transformIntensity}/10</span>
@@ -756,7 +739,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </div>
               </div>
               
-              {/* Transform Button */}
               <div style={{ textAlign: 'center' }}>
                 <button
                   onClick={transformVoice}
@@ -806,7 +788,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <h2 style={styles.title}>🎙️ Vocal Studio</h2>
               <p style={styles.subtitle}>Professional processing for every situation</p>
               
-              {/* Mode Selector */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
                 {[
                   { id: 'live', label: 'Live Performance', icon: '⚡' },
@@ -836,7 +817,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 ))}
               </div>
               
-              {/* Recording Controls */}
               <div style={{ 
                 background: 'rgba(30, 20, 50, 0.8)', 
                 borderRadius: '15px', 
@@ -865,14 +845,15 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               </div>
             </div>
           </div>
-        )}  {/* BEATMAKER */}
+        )}
+        
+        {/* BEATMAKER */}
         {activeTab === 'beatmaker' && (
           <div>
             <div style={styles.section}>
               <h2 style={styles.title}>🥁 AI Beatmaker</h2>
               <p style={styles.subtitle}>Describe your beat and let AI create it</p>
               
-              {/* Prompt */}
               <div style={{ marginBottom: '20px' }}>
                 <textarea
                   placeholder="Describe your beat... e.g., 'hard trap beat with 808s and fast hi-hats'"
@@ -882,7 +863,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 />
               </div>
               
-              {/* Quick Styles */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
                 {['Trap Banger', 'Boom Bap', 'R&B Smooth', 'Lo-Fi Chill', 'Drill Dark', 'Afrobeats', 'House', 'Gospel'].map(style => (
                   <button
@@ -895,7 +875,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 ))}
               </div>
               
-              {/* BPM */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', marginBottom: '10px' }}>
                   BPM: <span style={{ color: '#c084fc' }}>{bpm}</span>
@@ -910,12 +889,10 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 />
               </div>
               
-              {/* Generate Button */}
               <button onClick={generateBeat} style={{ ...styles.button, width: '100%', padding: '20px' }}>
                 🎵 Generate Beat with AI
               </button>
               
-              {/* Generated Beat */}
               {beatGenerated && (
                 <div style={{ 
                   marginTop: '30px', 
@@ -932,7 +909,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                     <button style={styles.buttonSecondary}>📥 Download</button>
                   </div>
                   
-                  {/* Drum Pattern */}
                   <div style={{ background: 'rgba(20, 10, 30, 0.8)', borderRadius: '10px', padding: '15px' }}>
                     {Object.entries(drumPattern).map(([drum, pattern]) => (
                       <div key={drum} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
@@ -991,7 +967,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 />
               </div>
               
-              {/* Quick Prompts */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
                 {[
                   'Love song',
@@ -1019,7 +994,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 {isGeneratingLyrics ? '✨ Writing...' : '✨ Generate Lyrics with AI'}
               </button>
               
-              {/* Generated Lyrics */}
               {generatedLyrics && (
                 <div style={{ 
                   marginTop: '30px', 
@@ -1055,7 +1029,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <h2 style={styles.title}>🎓 Vocal Coach</h2>
               <p style={styles.subtitle}>Train your voice with AI-powered exercises</p>
               
-              {/* Mode Selector */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' }}>
                 {[
                   { id: 'warmup', label: 'Warm-Up', icon: '🔥' },
@@ -1084,7 +1057,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 ))}
               </div>
               
-              {/* Warm-up Exercises */}
               {coachMode === 'warmup' && (
                 <div style={styles.grid}>
                   {[
@@ -1107,7 +1079,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </div>
               )}
               
-              {/* Pitch Assist */}
               {coachMode === 'pitch' && (
                 <div style={{ textAlign: 'center', padding: '40px' }}>
                   <div style={{ 
@@ -1129,7 +1100,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </div>
               )}
               
-              {/* Challenges */}
               {coachMode === 'challenges' && (
                 <div style={styles.grid}>
                   {[
@@ -1169,7 +1139,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </div>
               )}
               
-              {/* Leaderboard */}
               {coachMode === 'leaderboard' && (
                 <div style={{ maxWidth: '600px', margin: '0 auto' }}>
                   {[
@@ -1198,7 +1167,9 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               )}
             </div>
           </div>
-        )} {/* KARAOKE */}
+        )}
+        
+        {/* KARAOKE */}
         {activeTab === 'karaoke' && (
           <div>
             <div style={styles.section}>
@@ -1267,7 +1238,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                     <h2 style={{ marginBottom: '10px' }}>{selectedSong.title}</h2>
                     <p style={{ color: '#888', marginBottom: '30px' }}>{selectedSong.artist}</p>
                     
-                    {/* Lyrics Display */}
                     <div style={{ 
                       background: 'rgba(20, 10, 30, 0.8)', 
                       borderRadius: '15px', 
@@ -1282,7 +1252,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                       </p>
                     </div>
                     
-                    {/* Score */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginBottom: '30px' }}>
                       <div>
                         <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#22c55e' }}>{karaokeScore}</div>
@@ -1314,7 +1283,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <h2 style={styles.title}>🎛️ Stem Extractor</h2>
               <p style={styles.subtitle}>Separate any song into vocals, drums, bass, and instruments</p>
               
-              {/* Upload */}
               <div style={{ 
                 border: '2px dashed rgba(147, 51, 234, 0.5)',
                 borderRadius: '20px',
@@ -1331,7 +1299,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </p>
               </div>
               
-              {/* Quick Actions */}
               <div style={styles.grid}>
                 {[
                   { name: 'Extract Vocals', icon: '🎤', desc: 'Isolate just the vocals' },
@@ -1360,7 +1327,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <h2 style={styles.title}>🎧 Podcast Studio</h2>
               <p style={styles.subtitle}>Professional podcast recording with AI tools</p>
               
-              {/* Recording */}
               <div style={{ 
                 background: 'rgba(30, 20, 50, 0.8)', 
                 borderRadius: '15px', 
@@ -1389,7 +1355,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 </p>
               </div>
               
-              {/* Sound Effects */}
               <h3 style={{ marginBottom: '15px' }}>Sound Effects</h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '30px' }}>
                 {podcastSfx.map(sfx => (
@@ -1410,7 +1375,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 ))}
               </div>
               
-              {/* AI Tools */}
               <h3 style={{ marginBottom: '15px' }}>AI Tools</h3>
               <div style={styles.grid}>
                 {[
@@ -1449,7 +1413,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                 🎵 Generate Sound Effect
               </button>
               
-              {/* Sound Library */}
               <h3 style={{ marginTop: '40px', marginBottom: '20px' }}>Sound Library</h3>
               <div style={styles.grid}>
                 {[
@@ -1517,7 +1480,8 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
             </div>
           </div>
         )}
-  {/* SETTINGS */}
+        
+        {/* SETTINGS */}
         {activeTab === 'settings' && (
           <div>
             <div style={styles.section}>
@@ -1525,7 +1489,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
               <p style={styles.subtitle}>Configure your studio</p>
               
               <div style={styles.grid}>
-                {/* Audio Settings */}
                 <div style={styles.card}>
                   <h3 style={{ marginBottom: '20px' }}>🔊 Audio</h3>
                   <div style={{ marginBottom: '15px' }}>
@@ -1554,7 +1517,6 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                   </div>
                 </div>
                 
-                {/* Interface Settings */}
                 <div style={styles.card}>
                   <h3 style={{ marginBottom: '20px' }}>🎨 Interface</h3>
                   <div style={{ marginBottom: '15px' }}>
@@ -1593,444 +1555,4 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching 
                         position: 'absolute',
                         right: '2px',
                         top: '2px',
-                      }} />
-                    </button>
-                  </div>
-                </div>
-                
-                {/* AI Settings */}
-                <div style={styles.card}>
-                  <h3 style={{ marginBottom: '20px' }}>🤖 AI</h3>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>Processing Quality</label>
-                    <select style={{ ...styles.input, cursor: 'pointer' }}>
-                      <option>Fast</option>
-                      <option>Balanced</option>
-                      <option>Maximum</option>
-                    </select>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <span>Auto-Enhance Vocals</span>
-                    <button style={{
-                      width: '50px',
-                      height: '26px',
-                      borderRadius: '13px',
-                      background: 'linear-gradient(135deg, #9333ea, #ec4899)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      position: 'relative',
-                    }}>
-                      <div style={{
-                        width: '22px',
-                        height: '22px',
-                        borderRadius: '50%',
-                        background: 'white',
-                        position: 'absolute',
-                        right: '2px',
-                        top: '2px',
-                      }} />
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Smart Noise Reduction</span>
-                    <button style={{
-                      width: '50px',
-                      height: '26px',
-                      borderRadius: '13px',
-                      background: 'linear-gradient(135deg, #9333ea, #ec4899)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      position: 'relative',
-                    }}>
-                      <div style={{
-                        width: '22px',
-                        height: '22px',
-                        borderRadius: '50%',
-                        background: 'white',
-                        position: 'absolute',
-                        right: '2px',
-                        top: '2px',
-                      }} />
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Account Settings */}
-                <div style={styles.card}>
-                  <h3 style={{ marginBottom: '20px' }}>👤 Account</h3>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>Email</label>
-                    <input type="email" value="artist@studio.com" readOnly style={styles.input} />
-                  </div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>Plan</label>
-                    <div style={{
-                      padding: '10px 15px',
-                      background: isOwnerUnlocked 
-                        ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.2))'
-                        : 'rgba(30, 20, 50, 0.8)',
-                      border: isOwnerUnlocked 
-                        ? '1px solid rgba(245, 158, 11, 0.5)'
-                        : '1px solid rgba(147, 51, 234, 0.3)',
-                      borderRadius: '10px',
-                      color: isOwnerUnlocked ? '#fbbf24' : '#888',
-                    }}>
-                      {isOwnerUnlocked ? '👑 Lifetime (Owner)' : 'Free Trial'}
-                    </div>
-                  </div>
-                  <button style={{ ...styles.buttonSecondary, width: '100%' }}>
-                    Change Password
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* PRICING */}
-        {activeTab === 'pricing' && (
-          <div>
-            <div style={styles.section}>
-              <h2 style={styles.title}>💰 Pricing</h2>
-              <p style={styles.subtitle}>Choose your plan</p>
-              
-              <div style={styles.grid}>
-                {/* Starter */}
-                <div style={styles.card}>
-                  <h3>Starter</h3>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', margin: '20px 0' }}>
-                    $19<span style={{ fontSize: '16px', color: '#888' }}>/month</span>
-                  </div>
-                  <ul style={{ listStyle: 'none', padding: 0, marginBottom: '20px' }}>
-                    {['Vocal enhancement', 'Auto-Tune', 'Basic presets', 'Podcast mode', 'Limited beatmaker'].map((feature, i) => (
-                      <li key={i} style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✓ {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <button onClick={() => handlePayment('starter')} style={{ ...styles.button, width: '100%' }}>
-                    Get Starter
-                  </button>
-                </div>
-                
-                {/* Pro */}
-                <div style={{ 
-                  ...styles.card, 
-                  border: '2px solid #9333ea',
-                  position: 'relative',
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: '-12px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'linear-gradient(135deg, #9333ea, #ec4899)',
-                    padding: '5px 20px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                  }}>
-                    MOST POPULAR
-                  </div>
-                  <h3>Pro</h3>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', margin: '20px 0' }}>
-                    $49<span style={{ fontSize: '16px', color: '#888' }}>/month</span>
-                  </div>
-                  <ul style={{ listStyle: 'none', padding: 0, marginBottom: '20px' }}>
-                    {['Everything in Starter', 'Full vocal changer', 'Live + studio modes', 'Full beatmaker', 'AI songwriting', 'Stem separation'].map((feature, i) => (
-                      <li key={i} style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✓ {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <button onClick={() => handlePayment('pro')} style={{ ...styles.button, width: '100%' }}>
-                    Get Pro
-                  </button>
-                </div>
-                
-                {/* Lifetime */}
-                <div style={{ 
-                  ...styles.card,
-                  background: isOwnerUnlocked 
-                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.1))'
-                    : 'rgba(30, 20, 50, 0.8)',
-                  border: isOwnerUnlocked 
-                    ? '2px solid #fbbf24'
-                    : '1px solid rgba(147, 51, 234, 0.2)',
-                }}>
-                  <h3>Lifetime</h3>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', margin: '20px 0' }}>
-                    {isOwnerUnlocked ? (
-                      <span style={{ color: '#22c55e' }}>FREE 👑</span>
-                    ) : (
-                      <>$299<span style={{ fontSize: '16px', color: '#888' }}> one-time</span></>
-                    )}
-                  </div>
-                  <ul style={{ listStyle: 'none', padding: 0, marginBottom: '20px' }}>
-                    {['Everything unlocked', 'All future updates', 'Premium presets', 'Unlimited exports', 'Commercial rights'].map((feature, i) => (
-                      <li key={i} style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✓ {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <button 
-                    onClick={() => handlePayment('lifetime')} 
-                    style={{ 
-                      ...styles.button, 
-                      width: '100%',
-                      background: isOwnerUnlocked 
-                        ? 'linear-gradient(135deg, #22c55e, #16a34a)'
-                        : 'linear-gradient(135deg, #9333ea, #ec4899)',
-                    }}
-                  >
-                    {isOwnerUnlocked ? '✓ Owner Access Active' : 'Get Lifetime'}
-                  </button>
-                </div>
-              </div>
-              
-              <p style={{ textAlign: 'center', marginTop: '30px', color: '#666', fontSize: '14px' }}>
-                Press Ctrl+Shift+O for owner access
-              </p>
-            </div>
-          </div>
-        )}
-        
-        {/* SIGN OUT / ACCOUNT */}
-        {activeTab === 'signout' && (
-          <div>
-            <div style={styles.section}>
-              <h2 style={styles.title}>👤 Account</h2>
-              <p style={styles.subtitle}>Manage your account</p>
-              
-              <div style={{ 
-                background: 'rgba(30, 20, 50, 0.8)', 
-                borderRadius: '20px', 
-                padding: '40px',
-                textAlign: 'center',
-                maxWidth: '400px',
-                margin: '0 auto',
-              }}>
-                <div style={{
-                  width: '100px',
-                  height: '100px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #9333ea, #ec4899)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '36px',
-                  margin: '0 auto 20px',
-                }}>
-                  CA
-                </div>
-                <h3 style={{ marginBottom: '5px' }}>Creative Artist</h3>
-                <p style={{ color: '#888', marginBottom: '20px' }}>artist@studio.com</p>
-                
-                <div style={{
-                  padding: '10px 20px',
-                  background: isOwnerUnlocked 
-                    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.2))'
-                    : 'rgba(147, 51, 234, 0.2)',
-                  borderRadius: '20px',
-                  display: 'inline-block',
-                  marginBottom: '30px',
-                }}>
-                  {isOwnerUnlocked ? '👑 Lifetime Owner' : '⭐ Free Trial'}
-                </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <button style={styles.buttonSecondary}>Edit Profile</button>
-                  <button style={styles.buttonSecondary}>Change Password</button>
-                  <button style={styles.buttonSecondary}>Email Preferences</button>
-                  <button style={{ 
-                    ...styles.button, 
-                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                    marginTop: '10px',
-                  }}>
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </main> 
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '40px',
-            marginBottom: '40px',
-          }}>
-            {/* Logo */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                <div style={styles.logoIcon}>🎤</div>
-                <div style={styles.logoText}>THE STUDIO</div>
-              </div>
-              <p style={{ color: '#888', fontSize: '14px' }}>
-                Grammy-level AI vocal enhancement and music creation.
-              </p>
-              <p style={{ color: '#666', fontSize: '12px', marginTop: '10px' }}>
-                www.studioinpocket.com
-              </p>
-            </div>
-            
-            {/* Product */}
-            <div>
-              <h4 style={{ marginBottom: '15px' }}>Product</h4>
-              {['Voice Transform', 'AI Beatmaker', 'AI Songwriter', 'Vocal Coach', 'Karaoke', 'Pricing'].map((item, i) => (
-                <p key={i} style={{ color: '#888', fontSize: '14px', marginBottom: '8px', cursor: 'pointer' }}>
-                  {item}
-                </p>
-              ))}
-            </div>
-            
-            {/* Resources */}
-            <div>
-              <h4 style={{ marginBottom: '15px' }}>Resources</h4>
-              {['Help Center', 'Tutorials', 'Blog', 'API Docs', 'Community'].map((item, i) => (
-                <p key={i} style={{ color: '#888', fontSize: '14px', marginBottom: '8px', cursor: 'pointer' }}>
-                  {item}
-                </p>
-              ))}
-            </div>
-            
-            {/* Company */}
-            <div>
-              <h4 style={{ marginBottom: '15px' }}>Company</h4>
-              {['About Us', 'Careers', 'Press', 'Contact', 'Partners'].map((item, i) => (
-                <p key={i} style={{ color: '#888', fontSize: '14px', marginBottom: '8px', cursor: 'pointer' }}>
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
-          
-          {/* Bottom */}
-          <div style={{ 
-            borderTop: '1px solid rgba(147, 51, 234, 0.2)', 
-            paddingTop: '20px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '15px',
-          }}>
-            <p style={{ color: '#666', fontSize: '14px' }}>
-              © 2024 Studio AI Labs. All rights reserved.
-            </p>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              {['Privacy', 'Terms', 'Cookies'].map((item, i) => (
-                <span key={i} style={{ color: '#888', fontSize: '14px', cursor: 'pointer' }}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
-      
-      {/* Owner Unlock Modal */}
-      {showOwnerModal && (
-        <div style={styles.modal} onClick={() => setShowOwnerModal(false)}>
-          <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>🔐 Owner Access</h2>
-            <p style={{ color: '#888', marginBottom: '20px', textAlign: 'center' }}>
-              Enter your owner code to unlock free lifetime access
-            </p>
-            <input
-              type="password"
-              placeholder="Enter code..."
-              value={ownerCode}
-              onChange={(e) => setOwnerCode(e.target.value)}
-              style={{ ...styles.input, marginBottom: '20px' }}
-            />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setShowOwnerModal(false)} style={{ ...styles.buttonSecondary, flex: 1 }}>
-                Cancel
-              </button>
-              <button onClick={handleOwnerUnlock} style={{ ...styles.button, flex: 1 }}>
-                Unlock
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <div style={styles.modal} onClick={() => { setShowPaymentModal(false); setPaymentSuccess(false); }}>
-          <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            {!paymentSuccess ? (
-              <>
-                <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>
-                  💳 Get {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}
-                </h2>
-                <p style={{ color: '#888', marginBottom: '20px', textAlign: 'center' }}>
-                  {selectedPlan === 'starter' && '$19/month'}
-                  {selectedPlan === 'pro' && '$49/month'}
-                  {selectedPlan === 'lifetime' && '$299 one-time'}
-                </p>
-                
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  style={{ ...styles.input, marginBottom: '15px' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Card number"
-                  style={{ ...styles.input, marginBottom: '15px' }}
-                />
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    style={{ ...styles.input, flex: 1 }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="CVC"
-                    style={{ ...styles.input, flex: 1 }}
-                  />
-                </div>
-                
-                <button 
-                  onClick={processPayment}
-                  disabled={isProcessing}
-                  style={{ ...styles.button, width: '100%', opacity: isProcessing ? 0.7 : 1 }}
-                >
-                  {isProcessing ? 'Processing...' : `Pay ${
-                    selectedPlan === 'starter' ? '$19' :
-                    selectedPlan === 'pro' ? '$49' : '$299'
-                  }`}
-                </button>
-                
-                <p style={{ color: '#666', fontSize: '12px', textAlign: 'center', marginTop: '15px' }}>
-                  🔒 Secured by Stripe
-                </p>
-              </>
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎉</div>
-                <h2 style={{ marginBottom: '10px', color: '#22c55e' }}>Payment Successful!</h2>
-                <p style={{ color: '#888', marginBottom: '30px' }}>
-                  Welcome to {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}!
-                </p>
-                <button 
-                  onClick={() => { setShowPaymentModal(false); setPaymentSuccess(false); handleTabChange('studio'); }}
-                  style={styles.button}
-                >
-                  Start Creating 🎤
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+                      }}
