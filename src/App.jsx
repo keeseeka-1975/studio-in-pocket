@@ -1,13 +1,17 @@
 // ==========================================
 // THE STUDIO IN YOUR POCKET - COMPLETE APP
 // www.studioinpocket.com
-// Copy this ENTIRE file to src/App.jsx
+// Copy this ENTIRE file to src/App.tsx
 // ==========================================
 import { useState, useEffect, useCallback } from 'react';
 
+// Types
+type TabType = 'home' | 'transform' | 'studio' | 'beatmaker' | 'songwriter' | 'coach' | 'karaoke' | 'stems' | 'podcast' | 'sfx' | 'presets' | 'settings' | 'pricing' | 'signout';
+
+// Main App Component
 export default function App() {
   // State
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
   const [isOwnerUnlocked, setIsOwnerUnlocked] = useState(false);
   const [showOwnerModal, setShowOwnerModal] = useState(false);
   const [ownerCode, setOwnerCode] = useState('');
@@ -24,7 +28,7 @@ export default function App() {
   const [transformComplete, setTransformComplete] = useState(false);
   
   // Studio state
-  const [studioMode, setStudioMode] = useState('studio');
+  const [studioMode, setStudioMode] = useState<'live' | 'studio' | 'podcast'>('studio');
   const [isRecording, setIsRecording] = useState(false);
   
   // Beatmaker state
@@ -32,7 +36,7 @@ export default function App() {
   const [bpm, setBpm] = useState(120);
   const [beatGenerated, setBeatGenerated] = useState(false);
   const [isPlayingBeat, setIsPlayingBeat] = useState(false);
-  const [drumPattern, setDrumPattern] = useState({
+  const [drumPattern, setDrumPattern] = useState<{[key: string]: boolean[]}>({
     kick: [true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false],
     snare: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
     hihat: [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],
@@ -45,14 +49,14 @@ export default function App() {
   const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
   
   // Coach state
-  const [coachMode, setCoachMode] = useState('warmup');
+  const [coachMode, setCoachMode] = useState<'warmup' | 'pitch' | 'challenges' | 'leaderboard'>('warmup');
   
   // Karaoke state
-  const [selectedSong, setSelectedSong] = useState(null);
+  const [selectedSong, setSelectedSong] = useState<any>(null);
   const [karaokeScore, setKaraokeScore] = useState(0);
   
   // Audio context for sound effects
-  const [audioContext, setAudioContext] = useState(null);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   
   useEffect(() => {
     const unlocked = localStorage.getItem('ownerUnlocked');
@@ -62,12 +66,12 @@ export default function App() {
     
     const initAudio = () => {
       if (!audioContext) {
-        setAudioContext(new (window.AudioContext || window.webkitAudioContext)());
+        setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
       }
     };
     document.addEventListener('click', initAudio, { once: true });
     
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'O') {
         e.preventDefault();
         setShowOwnerModal(true);
@@ -80,7 +84,7 @@ export default function App() {
     };
   }, [audioContext]);
   
-  const playSound = useCallback((type) => {
+  const playSound = useCallback((type: string) => {
     if (!audioContext) return;
     
     const oscillator = audioContext.createOscillator();
@@ -155,7 +159,7 @@ export default function App() {
     }
   };
   
-  const handlePayment = (plan) => {
+  const handlePayment = (plan: string) => {
     if (isOwnerUnlocked && plan === 'lifetime') {
       alert('✅ You already have FREE Lifetime access!');
       return;
@@ -180,7 +184,7 @@ export default function App() {
     }
     setBeatGenerated(false);
     setTimeout(() => {
-      const newPattern = {
+      const newPattern: {[key: string]: boolean[]} = {
         kick: Array(16).fill(false).map((_, i) => i % 4 === 0 || (beatPrompt.toLowerCase().includes('trap') && i === 6)),
         snare: Array(16).fill(false).map((_, i) => i === 4 || i === 12),
         hihat: Array(16).fill(false).map(() => Math.random() > 0.3),
@@ -201,11 +205,17 @@ export default function App() {
     
     let step = 0;
     const interval = setInterval(() => {
+      if (!isPlayingBeat) {
+        clearInterval(interval);
+        return;
+      }
+      
       Object.keys(drumPattern).forEach(drum => {
         if (drumPattern[drum][step]) {
           playSound(drum);
         }
       });
+      
       step = (step + 1) % 16;
     }, (60 / bpm) * 250);
     
@@ -226,30 +236,30 @@ export default function App() {
       const lyrics = `[Verse 1]
 ${songPrompt.includes('love') ? 'Every moment with you feels like a dream' : 'Standing at the crossroads of my life'}
 ${songPrompt.includes('love') ? 'Your eyes light up everything it seems' : 'Ready to rise above the strife'}
-${songPrompt.includes('love') ? 'I never knew that love could feel this way' : "I've got fire burning in my soul"}
-${songPrompt.includes('love') ? 'With you I want to spend every single day' : "Nothing's gonna stop me reaching my goal"}
+${songPrompt.includes('love') ? 'I never knew that love could feel this way' : 'I\'ve got fire burning in my soul'}
+${songPrompt.includes('love') ? 'With you I want to spend every single day' : 'Nothing\'s gonna stop me reaching my goal'}
 
 [Chorus]
-${songPrompt.includes('love') ? "You're my everything, my heart, my soul" : "I'm unstoppable, unbreakable"}
+${songPrompt.includes('love') ? 'You\'re my everything, my heart, my soul' : 'I\'m unstoppable, unbreakable'}
 ${songPrompt.includes('love') ? 'With you by my side, I feel whole' : 'My spirit is unmistakable'}
 ${songPrompt.includes('love') ? 'Together we can conquer it all' : 'Watch me rise, watch me fly'}
-${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching for the sky"}
+${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching for the sky'}
 
 [Verse 2]
-${songPrompt.includes('love') ? "Through the storms and sunshine, you're my light" : 'Every setback is a setup for success'}
-${songPrompt.includes('love') ? 'Holding your hand, everything feels right' : "I'm gonna give it nothing less than my best"}
-${songPrompt.includes('love') ? "Promise me you'll never let me go" : "They said I couldn't, watch me prove them wrong"}
-${songPrompt.includes('love') ? 'My love for you continues to grow' : "I've been working on this all along"}
+${songPrompt.includes('love') ? 'Through the storms and sunshine, you\'re my light' : 'Every setback is a setup for success'}
+${songPrompt.includes('love') ? 'Holding your hand, everything feels right' : 'I\'m gonna give it nothing less than my best'}
+${songPrompt.includes('love') ? 'Promise me you\'ll never let me go' : 'They said I couldn\'t, watch me prove them wrong'}
+${songPrompt.includes('love') ? 'My love for you continues to grow' : 'I\'ve been working on this all along'}
 
 [Bridge]
-${songPrompt.includes('love') ? "I'll love you till the end of time" : 'This is my moment, this is my time'}
-${songPrompt.includes('love') ? 'Forever yours, forever mine' : "Victory is mine, I'm in my prime"}
+${songPrompt.includes('love') ? 'I\'ll love you till the end of time' : 'This is my moment, this is my time'}
+${songPrompt.includes('love') ? 'Forever yours, forever mine' : 'Victory is mine, I\'m in my prime'}
 
 [Chorus]
-${songPrompt.includes('love') ? "You're my everything, my heart, my soul" : "I'm unstoppable, unbreakable"}
+${songPrompt.includes('love') ? 'You\'re my everything, my heart, my soul' : 'I\'m unstoppable, unbreakable'}
 ${songPrompt.includes('love') ? 'With you by my side, I feel whole' : 'My spirit is unmistakable'}
 ${songPrompt.includes('love') ? 'Together we can conquer it all' : 'Watch me rise, watch me fly'}
-${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching for the sky"}`;
+${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : 'I\'m reaching for the sky'}`;
       
       setGeneratedLyrics(lyrics);
       setIsGeneratingLyrics(false);
@@ -268,7 +278,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
     }, 3000);
   };
   
-  const handleTabChange = useCallback((tab) => {
+  const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
   }, []);
@@ -285,7 +295,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
       backdropFilter: 'blur(20px)',
       borderBottom: '1px solid rgba(147, 51, 234, 0.3)',
       padding: '15px 20px',
-      position: 'sticky',
+      position: 'sticky' as const,
       top: 0,
       zIndex: 100,
     },
@@ -322,7 +332,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
     nav: {
       display: 'flex',
       gap: '5px',
-      flexWrap: 'wrap',
+      flexWrap: 'wrap' as const,
       justifyContent: 'center',
     },
     navButton: {
@@ -415,7 +425,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
       color: 'white',
       fontSize: '16px',
       minHeight: '120px',
-      resize: 'vertical',
+      resize: 'vertical' as const,
       outline: 'none',
     },
     slider: {
@@ -427,7 +437,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
       cursor: 'pointer',
     },
     modal: {
-      position: 'fixed',
+      position: 'fixed' as const,
       top: 0,
       left: 0,
       right: 0,
@@ -454,7 +464,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
     },
   };
 
-  const tabs = [
+  const tabs: { id: TabType; label: string; icon: string }[] = [
     { id: 'home', label: 'Home', icon: '🏠' },
     { id: 'transform', label: 'Transform', icon: '🎭' },
     { id: 'studio', label: 'Studio', icon: '🎙️' },
@@ -576,7 +586,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  textAlign: 'left',
+                  textAlign: 'left' as const,
                   marginBottom: '5px',
                 }}
               >
@@ -778,7 +788,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
               <h2 style={styles.title}>🎙️ Vocal Studio</h2>
               <p style={styles.subtitle}>Professional processing for every situation</p>
               
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
                 {[
                   { id: 'live', label: 'Live Performance', icon: '⚡' },
                   { id: 'studio', label: 'Studio Recording', icon: '🎚️' },
@@ -786,10 +796,9 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                 ].map(mode => (
                   <button
                     key={mode.id}
-                    onClick={() => setStudioMode(mode.id)}
+                    onClick={() => setStudioMode(mode.id as any)}
                     style={{
                       flex: 1,
-                      minWidth: '150px',
                       padding: '20px',
                       background: studioMode === mode.id 
                         ? 'linear-gradient(135deg, #9333ea, #ec4899)' 
@@ -893,14 +902,14 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                   border: '1px solid rgba(34, 197, 94, 0.3)',
                 }}>
                   <h3 style={{ color: '#22c55e', marginBottom: '15px' }}>✅ Beat Generated!</h3>
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                     <button onClick={playBeat} style={styles.button}>
                       {isPlayingBeat ? '⏹️ Stop' : '▶️ Play Beat'}
                     </button>
                     <button style={styles.buttonSecondary}>📥 Download</button>
                   </div>
                   
-                  <div style={{ background: 'rgba(20, 10, 30, 0.8)', borderRadius: '10px', padding: '15px', overflowX: 'auto' }}>
+                  <div style={{ background: 'rgba(20, 10, 30, 0.8)', borderRadius: '10px', padding: '15px' }}>
                     {Object.entries(drumPattern).map(([drum, pattern]) => (
                       <div key={drum} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <div style={{ width: '60px', textTransform: 'uppercase', fontSize: '12px', color: '#888' }}>
@@ -1002,7 +1011,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                   }}>
                     {generatedLyrics}
                   </pre>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                     <button style={styles.button}>📋 Copy</button>
                     <button style={styles.buttonSecondary}>📥 Download</button>
                     <button onClick={() => setGeneratedLyrics('')} style={styles.buttonSecondary}>🔄 New Song</button>
@@ -1029,7 +1038,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                 ].map(mode => (
                   <button
                     key={mode.id}
-                    onClick={() => setCoachMode(mode.id)}
+                    onClick={() => setCoachMode(mode.id as any)}
                     style={{
                       padding: '15px 25px',
                       background: coachMode === mode.id 
@@ -1376,7 +1385,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                   { name: 'Generate Transcript', icon: '📝' },
                   { name: 'Create Show Notes', icon: '📋' },
                 ].map((tool, i) => (
-                  <button key={i} style={{ ...styles.card, textAlign: 'center', border: 'none' }}>
+                  <button key={i} style={{ ...styles.card, textAlign: 'center' }}>
                     <div style={{ fontSize: '28px', marginBottom: '10px' }}>{tool.icon}</div>
                     <div>{tool.name}</div>
                   </button>
@@ -1419,7 +1428,7 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                   <button 
                     key={i} 
                     onClick={() => playSound('success')}
-                    style={{ ...styles.card, textAlign: 'center', border: 'none' }}
+                    style={{ ...styles.card, textAlign: 'center' }}
                   >
                     <div style={{ fontSize: '36px', marginBottom: '10px' }}>{sfx.icon}</div>
                     <div>{sfx.name}</div>
@@ -1498,6 +1507,14 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                       <option>Audio Interface</option>
                     </select>
                   </div>
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>Sample Rate</label>
+                    <select style={{ ...styles.input, cursor: 'pointer' }}>
+                      <option>44.1 kHz</option>
+                      <option>48 kHz</option>
+                      <option>96 kHz</option>
+                    </select>
+                  </div>
                 </div>
                 
                 <div style={styles.card}>
@@ -1516,46 +1533,26 @@ ${songPrompt.includes('love') ? 'Catch me baby if I ever fall' : "I'm reaching f
                       <option>Purple</option>
                       <option>Blue</option>
                       <option>Pink</option>
+                      <option>Green</option>
                     </select>
                   </div>
-                </div>
-                
-                <div style={styles.card}>
-                  <h3 style={{ marginBottom: '20px' }}>👤 Account</h3>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', color: '#888' }}>Plan</label>
-                    <div style={{
-                      padding: '10px 15px',
-                      background: isOwnerUnlocked 
-                        ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.2))'
-                        : 'rgba(30, 20, 50, 0.8)',
-                      border: isOwnerUnlocked 
-                        ? '1px solid rgba(245, 158, 11, 0.5)'
-                        : '1px solid rgba(147, 51, 234, 0.3)',
-                      borderRadius: '10px',
-                      color: isOwnerUnlocked ? '#fbbf24' : '#888',
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Animations</span>
+                    <button style={{
+                      width: '50px',
+                      height: '26px',
+                      borderRadius: '13px',
+                      background: 'linear-gradient(135deg, #9333ea, #ec4899)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      position: 'relative',
                     }}>
-                      {isOwnerUnlocked ? '👑 Lifetime (Owner)' : 'Free Trial'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* PRICING */}
-        {activeTab === 'pricing' && (
-          <div>
-            <div style={styles.section}>
-              <h2 style={styles.title}>💰 Pricing</h2>
-              <p style={styles.subtitle}>Choose your plan</p>
-              
-              <div style={styles.grid}>
-                {/* Starter */}
-                <div style={styles.card}>
-                  <h3>Starter</h3>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', margin: '20px 0' }}>
-                    $19<span style={{ fontSize: '16px', color: '#888' }}>/month</span>
-                  </div>
-                  <ul style={{ listStyle: 'none', padding: 0, marginBottom: '20px'
+                      <div style={{
+                        width: '22px',
+                        height: '22px',
+                        borderRadius: '50%',
+                        background: 'white',
+                        position: 'absolute',
+                        right: '2px',
+                        top: '2px',
+                      }}
