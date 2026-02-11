@@ -110,13 +110,44 @@ export default function App() {
     }, 1500);
   };
 
-  const playBeat = () => {
-    if (isPlayingBeat) { setIsPlayingBeat(false); return; }
-    setIsPlayingBeat(true);
-    let step = 0;
-    const interval = setInterval(() => {
-      Object.keys(drumPattern).forEach(drum => {
-        if (drumPattern[drum][step]) playSound(drum);
-      });
-      step = (step + 1) % 16;
-    }, (60 / bpm) * 
+// add near your component state
+const beatIntervalRef = useRef(null);
+
+const playBeat = () => {
+  // stop if already playing
+  if (isPlayingBeat) {
+    setIsPlayingBeat(false);
+    if (beatIntervalRef.current) {
+      clearInterval(beatIntervalRef.current);
+      beatIntervalRef.current = null;
+    }
+    return;
+  }
+
+  // start playing
+  setIsPlayingBeat(true);
+  let step = 0;
+  const stepMs = (60 / bpm) * 250; // 16th-note step duration
+
+  beatIntervalRef.current = setInterval(() => {
+    Object.keys(drumPattern).forEach((drum) => {
+      if (drumPattern[drum]?.[step]) {
+        playSound(drum);
+      }
+    });
+    step = (step + 1) % 16;
+  }, stepMs);
+};
+
+// optional: stop automatically after 10 seconds
+useEffect(() => {
+  if (!isPlayingBeat) return;
+  const t = setTimeout(() => {
+    if (beatIntervalRef.current) {
+      clearInterval(beatIntervalRef.current);
+      beatIntervalRef.current = null;
+    }
+    setIsPlayingBeat(false);
+  }, 10000);
+  return () => clearTimeout(t);
+}, [isPlayingBeat]);
