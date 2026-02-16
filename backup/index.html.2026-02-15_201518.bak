@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Studio In Your Pocket</title>
+  <style>
+    :root{
+      --bg0:#05050a; --bg1:#0a0a14; --bg2:#0f0a1a;
+      --c:#00d4ff; --m:#ff00ff; --g:#00ff88; --t:#ffffff;
+      --mut:#8a8fa3; --card:rgba(255,255,255,.04); --bd:rgba(255,255,255,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:linear-gradient(135deg,var(--bg0),var(--bg1),var(--bg2));
+      color:var(--t); min-height:100vh;
+    }
+    .app{display:flex; min-height:100vh}
+    .side{
+      width:260px; padding:16px 12px; background:rgba(0,0,0,.55);
+      border-right:1px solid rgba(0,212,255,.18); position:sticky; top:0; height:100vh; overflow:auto;
+    }
+    .logo{
+      font-weight:800; font-size:14px; letter-spacing:.6px;
+      background:linear-gradient(90deg,var(--c),var(--m),var(--c));
+      background-size:200% 100%;
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      animation:grad 3.5s linear infinite;
+    }
+    @keyframes grad {0%{background-position:0% 50%} 100%{background-position:200% 50%}}
+    .tag{font-size:10px; color:var(--mut); margin:6px 0 14px; letter-spacing:1.2px}
+    .sec{margin-top:14px; font-size:10px; color:rgba(0,212,255,.85); text-transform:uppercase; letter-spacing:1.2px}
+    .btn{
+      width:100%; margin-top:6px; padding:10px 10px; border-radius:10px;
+      background:transparent; border:1px solid transparent; color:rgba(255,255,255,.70);
+      text-align:left; cursor:pointer; transition:.15s;
+    }
+    .btn:hover{background:rgba(255,255,255,.06); color:#fff}
+    .btn.on{
+      background:linear-gradient(90deg,rgba(0,212,255,.16),rgba(255,0,255,.10));
+      border-color:rgba(0,212,255,.25); color:rgba(0,212,255,.95);
+      box-shadow:0 0 0 1px rgba(0,212,255,.08) inset;
+    }
+    .main{flex:1; padding:22px; max-width:1200px}
+    .h1{
+      margin:0; font-size:26px;
+      background:linear-gradient(90deg,var(--c),var(--m)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .sub{margin:6px 0 18px; color:var(--mut); font-size:12px}
+    .grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px}
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.side{width:230px}}
+    @media (max-width:720px){.app{display:block}.side{position:relative; width:auto; height:auto}.grid{grid-template-columns:1fr}}
+    .card{
+      background:var(--card); border:1px solid var(--bd); border-radius:14px; padding:14px;
+    }
+    .card h3{margin:0 0 10px; font-size:12px; color:rgba(0,212,255,.90); letter-spacing:.4px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .chip{
+      padding:7px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04); cursor:pointer; font-size:12px; color:rgba(255,255,255,.8);
+      user-select:none;
+    }
+    .chip.on{border-color:rgba(0,212,255,.55); background:rgba(0,212,255,.10); color:#eaffff}
+    .inp, .sel, textarea{
+      width:100%; padding:10px 11px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14); background:rgba(0,0,0,.20);
+      color:#fff; outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .cta{
+      padding:11px 14px; border-radius:12px; border:0; cursor:pointer;
+      background:linear-gradient(90deg,var(--c),var(--m)); color:#fff; font-weight:800;
+      letter-spacing:.2px; transition:.15s;
+    }
+    .cta:hover{transform:translateY(-1px); box-shadow:0 12px 30px rgba(0,212,255,.12)}
+    .cta:active{transform:translateY(0px)}
+    .cta.secondary{
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); font-weight:700;
+    }
+    .prog{height:8px; background:rgba(255,255,255,.09); border-radius:999px; overflow:hidden}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--c),var(--m)); transition:width .12s}
+    .out{
+      white-space:pre-wrap; line-height:1.55; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.10);
+      border-radius:14px; padding:14px; min-height:280px;
+    }
+    .kpi{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px}
+    .kpi .k{background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; text-align:center}
+    .k b{display:block; font-size:18px; color:rgba(0,212,255,.95)}
+    .k span{font-size:10px; color:var(--mut); text-transform:uppercase; letter-spacing:1.2px}
+    .mini{font-size:11px; color:rgba(255,255,255,.72)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <div class="logo">🎤 STUDIO IN YOUR POCKET</div>
+      <div class="tag">AI VOCAL + MUSIC CREATION PLATFORM</div>
+
+      <div class="sec">Main</div>
+      <button class="btn on" data-page="dashboard">🏠 Dashboard</button>
+      <button class="btn" data-page="hit">✍️ AI Hit Song Builder</button>
+
+      <div class="sec">Create</div>
+      <button class="btn" data-page="music">🎵 AI Music Maker</button>
+      <button class="btn" data-page="video">🎬 Music Video AI</button>
+
+      <div class="sec">Perform</div>
+      <button class="btn" data-page="karaoke">🎤 Karaoke</button>
+
+      <div class="sec">System</div>
+      <button class="btn" data-page="pricing">💰 Pricing</button>
+
+      <div style="margin-top:16px" class="mini">
+        Owner code: <b>VOXLEGEND-OWNER-2024</b>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="page-dashboard">
+        <h1 class="h1">Studio In Your Pocket</h1>
+        <p class="sub">A premium AI vocal + songwriting + music creation suite (offline demo build). Click tiles to navigate.</p>
+
+        <div class="card">
+          <h3>Quick Launch</h3>
+          <div class="grid">
+            <div class="card" style="cursor:pointer" data-nav="hit">
+              <h3>✍️ AI Hit Song Builder</h3>
+              <div class="mini">Long-form, professional lyrics • hooks • bridges • outro • adlibs</div>
+            </div>
+            <div class="card" style="cursor:pointer" data-nav="music">
+              <h3>🎵 AI Music Maker</h3>
+              <div class="mini">Prompt-based music generation (demo)</div>
+            </div>
+            <div class="card" style="cursor:pointer" data-nav="video">
+              <h3>🎬 Music Video AI</h3>
+              <div class="mini">Generate video concept + export formats (demo)</div>
+            </div>
+            <div class="card" style="cursor:pointer" data-nav="karaoke">
+              <h3>🎤 Karaoke</h3>
+              <div class="mini">Song library + scoring (demo)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Status</h3>
+          <div class="kpi">
+            <div class="k"><b>0.001ms</b><span>Latency</span></div>
+            <div class="k"><b>192kHz</b><span>Sample Rate</span></div>
+            <div class="k"><b>64-bit</b><span>Float</span></div>
+            <div class="k"><b>OK</b><span>System</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-hit" style="display:none">
+        <h1 class="h1">AI Hit Song Builder</h1>
+        <p class="sub">Professional, longer lyrics with structure, hooks, internal rhymes, imagery, and performance notes. Choose length: Short / Standard / Extended.</p>
+
+        <div class="card">
+          <h3>Creative Direction</h3>
+          <div class="row" style="margin-bottom:10px">
+            <div style="flex:1;min-width:220px">
+              <label class="mini">Genre</label>
+              <div class="row" id="genreRow" style="margin-top:6px; gap:6px; flex-wrap:wrap"></div>
+            </div>
+            <div style="flex:1;min-width:220px">
+              <label class="mini">Mood</label>
+              <div class="row" id="moodRow" style="margin-top:6px; gap:6px; flex-wrap:wrap"></div>
+            </div>
+            <div style="flex:1;min-width:220px">
+              <label class="mini">Length</label>
+              <div class="row" id="lenRow" style="margin-top:6px; gap:6px; flex-wrap:wrap"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="flex:2;min-width:260px">
+              <label class="mini">Story / Topic (what happened?)</label>
+              <textarea id="topic" class="inp" placeholder="Example: I left a toxic relationship, rebuilt my confidence, and now I’m choosing peace."></textarea>
+            </div>
+            <div style="flex:1;min-width:240px">
+              <label class="mini">Structure</label>
+              <select id="structure" class="sel">
+                <option value="vcvcbc">Verse • Chorus • Verse • Chorus • Bridge • Final Chorus • Outro</option>
+                <option value="ivcvcbo">Intro • Verse • Chorus • Verse • Chorus • Bridge • Outro</option>
+                <option value="aaba">AABA (Classic)</option>
+                <option value="free">Free Form (AI-guided)</option>
+              </select>
+
+              <div style="height:10px"></div>
+
+              <label class="mini">Hook Focus</label>
+              <select id="hookFocus" class="sel">
+                <option value="anthem">Anthem / Stadium</option>
+                <option value="melodic">Melodic / Singable</option>
+                <option value="rhythmic">Rhythmic / Cadence</option>
+                <option value="emotional">Emotional / Heart-tug</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button class="cta" id="genBtn">✨ Generate Full Song</button>
+            <button class="cta secondary" id="makeHitBtn">🔥 Make This A Hit (Rewrite)</button>
+            <button class="cta secondary" id="copyBtn">📋 Copy</button>
+            <button class="cta secondary" id="clearBtn">🗑️ Clear</button>
+          </div>
+
+          <div style="margin-top:12px" class="prog"><div class="bar" id="progBar"></div></div>
+        </div>
+
+        <div class="card">
+          <h3>Output</h3>
+          <div class="out" id="output">Generate to see your full song here…</div>
+        </div>
+      </section>
+
+      <section id="page-music" style="display:none">
+        <h1 class="h1">AI Music Maker (Demo)</h1>
+        <p class="sub">Prompt-based music generation demo panel.</p>
+        <div class="card">
+          <h3>Prompt</h3>
+          <textarea class="inp" id="musicPrompt" placeholder="Example: soulful R&B with warm Rhodes, live bass, tight drums, and airy pads."></textarea>
+          <div class="row">
+            <button class="cta" id="musicGen">✨ Generate</button>
+          </div>
+          <div style="margin-top:12px" class="out" id="musicOut">No track generated yet.</div>
+        </div>
+      </section>
+
+      <section id="page-video" style="display:none">
+        <h1 class="h1">Music Video AI (Demo)</h1>
+        <p class="sub">Creates a detailed video concept + export settings.</p>
+        <div class="card">
+          <h3>Concept</h3>
+          <input class="inp" id="videoTitle" placeholder="Song title" />
+          <textarea class="inp" id="videoPrompt" placeholder="Describe the vibe: stage performance, cinematic, neon city, etc."></textarea>
+          <div class="row">
+            <button class="cta" id="videoGen">🎬 Generate Video Plan</button>
+          </div>
+          <div style="margin-top:12px" class="out" id="videoOut">No video plan generated yet.</div>
+        </div>
+      </section>
+
+      <section id="page-karaoke" style="display:none">
+        <h1 class="h1">Karaoke (Demo)</h1>
+        <p class="sub">Select a song preset and simulate scoring.</p>
+        <div class="card">
+          <h3>Song Library</h3>
+          <div class="row">
+            <div class="chip on">Easy Pop</div>
+            <div class="chip">R&B Mid</div>
+            <div class="chip">Soul Ballad</div>
+            <div class="chip">Gospel Run</div>
+          </div>
+          <div style="margin-top:12px" class="kpi">
+            <div class="k"><b>92%</b><span>Pitch</span></div>
+            <div class="k"><b>88%</b><span>Timing</span></div>
+            <div class="k"><b>95%</b><span>Expression</span></div>
+            <div class="k"><b>90%</b><span>Overall</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-pricing" style="display:none">
+        <h1 class="h1">Pricing</h1>
+        <p class="sub">Starter • Pro • Lifetime. Owner code unlock: VOXLEGEND-OWNER-2024</p>
+        <div class="card">
+          <h3>Owner Unlock</h3>
+          <div class="row">
+            <input class="inp" id="ownerCode" placeholder="Enter owner code..." style="max-width:320px" />
+            <button class="cta" id="unlockBtn">Unlock</button>
+          </div>
+          <div class="out" id="unlockOut" style="min-height:110px;margin-top:10px">Locked.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+  // ---------- simple router ----------
+  const pages = ["dashboard","hit","music","video","karaoke","pricing"];
+  function show(page){
+    pages.forEach(p=>{
+      document.getElementById("page-"+p).style.display = (p===page) ? "block" : "none";
+    });
+    document.querySelectorAll(".btn[data-page]").forEach(b=>{
+      b.classList.toggle("on", b.dataset.page===page);
+    });
+    history.replaceState({}, "", "#"+page);
+  }
+  document.querySelectorAll(".btn[data-page]").forEach(b=>{
+    b.addEventListener("click", ()=>show(b.dataset.page));
+  });
+  document.querySelectorAll("[data-nav]").forEach(tile=>{
+    tile.addEventListener("click", ()=>show(tile.dataset.nav));
+  });
+  show((location.hash||"#dashboard").slice(1));
+
+  // ---------- Hit Song Builder ----------
+  const GENRES = ["R&B","Pop","Hip-Hop","Soul","Gospel","Afrobeat","EDM","Country","Rock","Jazz"];
+  const MOODS  = ["Romantic","Heartbreak","Confident","Vulnerable","Triumphant","Nostalgic","Dark","Uplifting"];
+  const LENS   = [
+    {id:"short", label:"Short"},
+    {id:"standard", label:"Standard"},
+    {id:"extended", label:"Extended"}
+  ];
+
+  let state = { genre:"R&B", mood:"Romantic", len:"standard", lastSong:"" };
+
+  function mountChips(rowId, items, getValue, setValue){
+    const row = document.getElementById(rowId);
+    row.innerHTML = "";
+    items.forEach(it=>{
+      const label = (typeof it === "string") ? it : it.label;
+      const value = (typeof it === "string") ? it : it.id;
+      const el = document.createElement("div");
+      el.className = "chip" + (getValue()===value ? " on" : "");
+      el.textContent = label;
+      el.addEventListener("click", ()=>{
+        setValue(value);
+        mountAll();
+      });
+      row.appendChild(el);
+    });
+  }
+
+  function mountAll(){
+    mountChips("genreRow", GENRES, ()=>state.genre, v=>state.genre=v);
+    mountChips("moodRow", MOODS, ()=>state.mood, v=>state.mood=v);
+    mountChips("lenRow", LENS, ()=>state.len, v=>state.len=v);
+  }
+  mountAll();
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  function titleCase(s){ return (s||"").split(" ").filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1)).join(" ") }
+
+  function buildHook(topic, focus){
+    const seeds = {
+      anthem: ["we don't break", "hands up", "watch me rise", "this is my moment", "can't stop now"],
+      melodic:["say my name", "hold me close", "stay tonight", "bring me back", "you feel like home"],
+      rhythmic:["back to back", "on my line", "no cap", "big step", "new energy"],
+      emotional:["I had to let you go", "I miss the old me", "I forgive you", "I chose me", "I needed peace"]
+    };
+    const base = rand(seeds[focus] || seeds.melodic);
+    const t = (topic || "").trim();
+    const pinch = t ? rand([t.split(".")[0], t.split(",")[0], t.split(" ").slice(0,6).join(" ")]) : "";
+    const hook = rand([
+      `${base} — ${pinch}`.replace(/\s+—\s*$/, ""),
+      `${base}, ${rand(["for the last time","like it's brand new","and I'm still here","and I mean it","I swear"])}`,
+      `${rand(["tell me","baby","listen"])} ${base}`
+    ]);
+    return hook.replace(/\s+/g," ").trim();
+  }
+
+  function verseLines(len){
+    if(len==="short") return 10;
+    if(len==="extended") return 18;
+    return 14; // standard
+  }
+  function chorusLines(len){
+    if(len==="short") return 6;
+    if(len==="extended") return 10;
+    return 8;
+  }
+  function bridgeLines(len){
+    if(len==="short") return 6;
+    if(len==="extended") return 12;
+    return 8;
+  }
+
+  function rhymePair(){
+    return rand([
+      ["time","mine"],["light","night"],["peace","release"],["heat","beat"],
+      ["alive","survive"],["rain","pain"],["stay","away"],["more","floor"],
+      ["truth","youth"],["name","flame"],["home","alone"]
+    ]);
+  }
+
+  function generateVerse(topic, genre, mood, len, idx){
+    const [r1,r2] = rhymePair();
+    const imagery = rand([
+      "neon on the windshield", "late-night kitchen light", "echo in the hallway",
+      "perfume on my hoodie", "city breathing slow", "choir in my chest",
+      "cold phone screen glow", "sunrise on my shoulders"
+    ]);
+    const stance = rand([
+      "I drew a line and I meant it",
+      "I changed the lock on my feelings",
+      "I stopped apologizing for needing air",
+      "I found my backbone in the quiet",
+      "I learned my value without an audience"
+    ]);
+    const t = (topic||"").trim();
+    const tbit = t ? rand([t.split(".")[0], t.split(",")[0], t.split(" ").slice(0,10).join(" ")]) : rand(["what we were","what you did","what I learned"]);
+    const L = verseLines(len);
+    const lines = [];
+
+    lines.push(`(${genre} • ${mood}) Verse ${idx}:`);
+    lines.push("");
+
+    const starters = [
+      `I replay ${tbit} like a movie in the ${imagery},`,
+      `You said you loved me but your silence told the story,`,
+      `I was holding on to maybes, you were holding back the truth,`,
+      `I kept the peace so long I almost lost my youth,`,
+      `Now I'm breathing different—listen how my heart moves,`
+    ];
+
+    for(let i=0;i<L;i++){
+      const a = rand([
+        starters[Math.min(i, starters.length-1)],
+        `I turned the ache into a rhythm, let it talk in my headphones,`,
+        `If you want me, show me—don't just post it, don't just say so,`,
+        `I was soft, I was loyal, but I won’t be your shadow,`,
+        `I made a home in my own skin, I won't trade it for a halo,`,
+        `I learned that love ain't supposed to feel like walking on glass,`,
+        `So I let it burn clean—no smoke, no ash,`,
+        `I keep my boundaries like diamonds, cut clear, no cracks,`,
+        `I don't chase—I'm the reason you look back,`,
+        `I took my power off the shelf, put it right where it belongs,`,
+        `I wrote the lesson in a melody and called it a song,`
+      ]);
+      const end = rand([
+        `and I don't fold this time (${r1}/${r2}).`,
+        `but I’m not yours anymore (${r1}/${r2}).`,
+        `and now I’m finally aligned (${r1}/${r2}).`,
+        `so watch me cross that line (${r1}/${r2}).`,
+        `I’m done paying that fine (${r1}/${r2}).`
+      ]);
+
+      // sprinkle rhyme ends
+      const useRhyme = (i%3===2);
+      lines.push(useRhyme ? `${a} ${end}` : a);
+    }
+
+    lines.push("");
+    lines.push(rand([
+      "[PRE-CHORUS] (lift)",
+      "[PRE-CHORUS] (build)",
+      "[PRE-CHORUS] (open up)",
+      "[PRE-CHORUS] (tension)"
+    ]));
+    lines.push(rand([
+      `I can feel it in my ribs—this is where I change,`,
+      `It’s a quiet kind of courage, but it hits like flames,`,
+      `If you want the old me, you’re too late—too late,`,
+      `I’m choosing peace, I’m choosing me, I’m choosing fate,`
+    ]));
+    lines.push(rand([
+      `Say it plain: I’m not returning to that version of my name.`,
+      `Every tear was tuition—now I graduate.`,
+      `You can keep your confusion—I’m not stuck in it.`,
+      `I’m not begging for respect, I’m requiring it.`
+    ]));
+
+    return lines.join("\n");
+  }
+
+  function generateChorus(hook, len){
+    const L = chorusLines(len);
+    const lines = [];
+    lines.push("[CHORUS] ★★★ (hook)");
+    lines.push("");
+    // anchor hook
+    lines.push(`${hook}`);
+    lines.push(rand([
+      `I chose me, I chose peace, I chose something real,`,
+      `You can’t buy this kind of love, it’s how I heal,`,
+      `If you miss me, miss the truth, not the control,`,
+      `I’m a headline now—no footnote in your story, no.`
+    ]));
+    for(let i=0;i<Math.max(0, L-3); i++){
+      lines.push(rand([
+        `Hands off my heart if you can’t hold it right,`,
+        `I’m not a placeholder, I’m the whole highlight,`,
+        `I glow different when I’m not fighting to be seen,`,
+        `I’m the upgrade—clean love, clean energy,`,
+        `Say it with your chest or don’t say it at all,`,
+        `I won’t shrink to fit a space that makes me small,`,
+        `This is the part where I rise and don’t fall,`,
+      ]));
+    }
+    lines.push("");
+    lines.push(rand(["(Adlibs: ooh / yeah / mm / take it)","(Adlibs: run it back / no, no / listen)","(Adlibs: stay right there / oh)"]));
+    return lines.join("\n");
+  }
+
+  function generateBridge(hook, len){
+    const L = bridgeLines(len);
+    const lines = [];
+    lines.push("[BRIDGE] ★★ (switch-up)");
+    lines.push("");
+    const core = [
+      `Let it breathe—no more rushing love,`,
+      `I’m not afraid of lonely if it saves my soul,`,
+      `I’d rather be whole than halfway held,`,
+      `Say my truth like a chord that never breaks,`,
+      `I turned the pain into power—watch it levitate,`
+    ];
+    for(let i=0;i<L;i++){
+      lines.push(rand([
+        core[Math.min(i, core.length-1)],
+        `If you hear this, know I mean it—I'm not coming back,`,
+        `I forgave you for me, not for you—big facts,`,
+        `I’m the prayer and the answer, the question and the map,`,
+        `I’m rebuilding with intention—no cracks in the craft,`,
+        `And the new me? she’s expensive—no discounts, no tabs,`
+      ]));
+    }
+    lines.push("");
+    lines.push(`[FINAL HOOK] ${hook}`);
+    return lines.join("\n");
+  }
+
+  function generateOutro(len){
+    const lines = [];
+    lines.push("[OUTRO]");
+    lines.push("");
+    const repeats = (len==="extended") ? 6 : (len==="standard" ? 4 : 3);
+    for(let i=0;i<repeats;i++){
+      lines.push(rand([
+        "Fade out with harmonies • (ooh) (yeah) (mm)",
+        "Stacked vocals: low octave + airy top line",
+        "Half-time drums, reverb tail, last note held",
+        "Spoken tag: “studio in your pocket…”",
+      ]));
+    }
+    return lines.join("\n");
+  }
+
+  function buildSong(){
+    const genre = state.genre;
+    const mood = state.mood;
+    const len  = state.len;
+
+    const topic = document.getElementById("topic").value.trim();
+    const focus = document.getElementById("hookFocus").value;
+    const structure = document.getElementById("structure").value;
+
+    const hook = buildHook(topic, focus);
+    const title = titleCase(rand([
+      hook.replace(/[^\w\s’']/g,"").slice(0,42),
+      (topic ? topic.split(/[,.]/)[0] : hook).slice(0,42),
+      rand(["No More Maybes","Peace I Chose","Stay Gone","Diamond Boundaries","New Me Energy","After The Storm"])
+    ])).trim() || "Untitled";
+
+    let sections = [];
+    sections.push("════════════════════════════════════════════════════");
+    sections.push(`STUDIO IN YOUR POCKET • HIT SONG BUILDER`);
+    sections.push(`TITLE: "${title}"`);
+    sections.push(`GENRE: ${genre} • MOOD: ${mood} • LENGTH: ${len.toUpperCase()}`);
+    sections.push("════════════════════════════════════════════════════");
+    sections.push("");
+
+    if(structure==="aaba"){
+      sections.push(generateVerse(topic, genre, mood, len, "A"));
+      sections.push(generateChorus(hook, len));
+      sections.push(generateVerse(topic, genre, mood, len, "A"));
+      sections.push(generateBridge(hook, len)); // treat as B
+      sections.push(generateVerse(topic, genre, mood, len, "A (return)"));
+      sections.push(generateOutro(len));
+    } else if(structure==="ivcvcbo"){
+      sections.push("[INTRO] (scene-set)");
+      sections.push(rand([
+        "Soft pad + room tone • (breath) • whisper lead-in",
+        "Guitar motif + vinyl texture • first line spoken",
+        "Piano arpeggio • low harmony enters",
+      ]));
+      sections.push("");
+      sections.push(generateVerse(topic, genre, mood, len, 1));
+      sections.push(generateChorus(hook, len));
+      sections.push(generateVerse(topic, genre, mood, len, 2));
+      sections.push(generateChorus(hook, len));
+      sections.push(generateBridge(hook, len));
+      sections.push(generateOutro(len));
+    } else if(structure==="free"){
+      sections.push(generateVerse(topic, genre, mood, len, 1));
+      sections.push(generateChorus(hook, len));
+      sections.push("[POST-CHORUS] (earworm)");
+      sections.push(rand([
+        "Na-na-na / mm-mm-mm (repeat x4) with stacked harmonies",
+        "One-word chant + call/response adlibs (repeat x4)",
+        "Melisma run over the hook phrase (repeat x3)",
+      ]));
+      sections.push("");
+      sections.push(generateVerse(topic, genre, mood, len, 2));
+      sections.push(generateBridge(hook, len));
+      sections.push("[FINAL CHORUS] (double chorus, bigger)");
+      sections.push(generateChorus(hook, len));
+      if(len!=="short"){
+        sections.push("");
+        sections.push("[ADLIB PASS]");
+        const adlibs = (len==="extended") ? 10 : 6;
+        for(let i=0;i<adlibs;i++){
+          sections.push(rand([
+            "yeah… (run up) / mm / tell ‘em / I’m free now",
+            "ooh (harmony stack) / take it / no more",
+            "listen… / I chose me / I chose peace",
+            "ah (riff) / don’t call back / too late",
+          ]));
+        }
+      }
+      sections.push("");
+      sections.push(generateOutro(len));
+    } else {
+      // default vcvcbc
+      sections.push(generateVerse(topic, genre, mood, len, 1));
+      sections.push(generateChorus(hook, len));
+      sections.push(generateVerse(topic, genre, mood, len, 2));
+      sections.push(generateChorus(hook, len));
+      sections.push(generateBridge(hook, len));
+      sections.push("[FINAL CHORUS] ★★★ (lift + last hook)");
+      sections.push(generateChorus(hook, len));
+      sections.push(generateOutro(len));
+    }
+
+    // analytics
+    const text = sections.join("\n");
+    const words = text.replace(/[^\w’'\s]/g,"").split(/\s+/).filter(Boolean).length;
+    const lines = text.split("\n").length;
+    const hitPotential = (len==="extended") ? 97 : (len==="standard" ? 94 : 91);
+    const singability = (genre==="Hip-Hop") ? 90 : 95;
+
+    const footer = [
+      "",
+      "════════════════════════════════════════════════════",
+      `ANALYTICS • Words: ${words} • Lines: ${lines} • Hit Potential: ${hitPotential}% • Singability: ${singability}%`,
+      "TIP: Swap Hook Focus + Length to instantly reshape the entire song.",
+      "════════════════════════════════════════════════════"
+    ].join("\n");
+
+    state.lastSong = text + footer;
+    return state.lastSong;
+  }
+
+  function animateProgress(bar){
+    bar.style.width = "0%";
+    let p = 0;
+    const id = setInterval(()=>{
+      p += Math.random()*10 + 5;
+      if(p >= 100){ p = 100; clearInterval(id); }
+      bar.style.width = p.toFixed(0) + "%";
+    }, 90);
+    return id;
+  }
+
+  const out = document.getElementById("output");
+  const bar = document.getElementById("progBar");
+
+  document.getElementById("genBtn").addEventListener("click", ()=>{
+    out.textContent = "Generating a full song…";
+    animateProgress(bar);
+    setTimeout(()=>{ out.textContent = buildSong(); }, 950);
+  });
+
+  document.getElementById("makeHitBtn").addEventListener("click", ()=>{
+    const base = state.lastSong || buildSong();
+    // rewrite pass: punchier hook + tightened chorus
+    const upgraded = base
+      .replace(/Hit Potential: \d+%/, "Hit Potential: 98%")
+      .replace(/\[CHORUS\] ★★★ \(hook\)/g, "[CHORUS] ★★★ (HIT REWRITE)")
+      .replace(/I chose me, I chose peace, I chose something real,/g, "I chose me, I chose peace—now the room can feel it.");
+    state.lastSong = upgraded;
+    out.textContent = upgraded;
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async ()=>{
+    const txt = out.textContent || "";
+    try{ await navigator.clipboard.writeText(txt); alert("Copied to clipboard."); }
+    catch{ alert("Copy failed (browser permissions)."); }
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", ()=>{
+    out.textContent = "Generate to see your full song here…";
+    bar.style.width = "0%";
+    state.lastSong = "";
+  });
+
+  // other demo pages
+  document.getElementById("musicGen").addEventListener("click", ()=>{
+    const p = document.getElementById("musicPrompt").value.trim() || "AI generated track";
+    document.getElementById("musicOut").textContent =
+      `Generated 2 variations.\n\n1) Variation A: ${p}\n2) Variation B: ${p} (alt drums + bass)\n\n(Export: WAV / MP3 / STEMS)`;
+  });
+
+  document.getElementById("videoGen").addEventListener("click", ()=>{
+    const t = document.getElementById("videoTitle").value.trim() || "Untitled";
+    const p = document.getElementById("videoPrompt").value.trim() || "Performance + cinematic lighting + lyric overlays";
+    document.getElementById("videoOut").textContent =
+`VIDEO PLAN: "${t}"
+STYLE: ${p}
+
+SCENES:
+- Intro: establishing shot, logo reveal, slow motion
+- Verse: intimate close-ups, handheld motion
+- Chorus: stage lights + crowd silhouettes + beat-synced cuts
+- Bridge: color grade shift, minimal background, emotional focus
+- Final Chorus: wide shots, big lighting, confetti / particles
+
+EXPORT:
+- TikTok/Reels: 9:16 1080x1920
+- YouTube: 16:9 1920x1080
+- Square: 1:1 1080x1080`;
+  });
+
+  document.getElementById("unlockBtn").addEventListener("click", ()=>{
+    const code = document.getElementById("ownerCode").value.trim();
+    document.getElementById("unlockOut").textContent =
+      (code === "VOXLEGEND-OWNER-2024")
+        ? "OWNER ACCESS ACTIVE ✅\nLifetime unlocked (demo)."
+        : "Invalid code.\nTry: VOXLEGEND-OWNER-2024";
+  });
+</script>
+</body>
+</html>
